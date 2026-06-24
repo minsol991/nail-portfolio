@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>사진 관리 · Nail Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f6f3ee; --bg-2:#efe9e1; --text:#2a2724; --muted:#8c8378;
+      --line:#e3dcd2; --accent:#b29f8c; --danger:#c97b6b;
+      --sans:"Noto Sans KR",-apple-system,"Segoe UI",sans-serif;
+      --serif:"Cormorant Garamond",serif;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;line-height:1.7;padding:40px 20px 80px}
+    .wrap{max-width:980px;margin:0 auto}
+    header{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:8px}
+    h1{font-family:var(--serif);font-weight:500;font-size:34px;letter-spacing:.02em}
+    .view-link{font-size:13px;letter-spacing:.08em;color:var(--text);border-bottom:1px solid var(--text);padding-bottom:3px}
+    .desc{color:var(--muted);font-size:14px;margin-bottom:30px}
+
+    .drop{
+      border:1.5px dashed var(--line);border-radius:10px;background:#fff;
+      padding:54px 24px;text-align:center;cursor:pointer;transition:all .25s ease;
+    }
+    .drop:hover,.drop.over{border-color:var(--accent);background:#fffdfa}
+    .drop__icon{font-size:40px;color:var(--accent);margin-bottom:14px}
+    .drop__big{font-size:17px;margin-bottom:6px}
+    .drop__small{font-size:13px;color:var(--muted)}
+    #file{display:none}
+
+    .status{margin:18px 0 0;min-height:22px;font-size:14px;color:var(--accent);text-align:center}
+    .bar{height:3px;background:var(--bg-2);border-radius:3px;overflow:hidden;margin-top:10px;display:none}
+    .bar.show{display:block}
+    .bar__in{height:100%;width:0;background:var(--accent);transition:width .2s ease}
+
+    .count{margin:46px 0 16px;font-size:13px;letter-spacing:.14em;color:var(--muted);
+      text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:12px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+    .item{position:relative;border-radius:6px;overflow:hidden;background:var(--bg-2);aspect-ratio:3/4}
+    .item img{width:100%;height:100%;object-fit:cover;display:block}
+    .item .meta{position:absolute;left:0;right:0;bottom:0;padding:8px 10px;color:#fff;font-size:12px;
+      background:linear-gradient(to top,rgba(20,18,16,.65),rgba(20,18,16,0))}
+    .item .meta .nm{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .item .del{position:absolute;top:8px;right:8px;width:28px;height:28px;border:0;border-radius:50%;
+      background:rgba(255,255,255,.9);color:var(--danger);font-size:18px;cursor:pointer;line-height:1;
+      opacity:0;transition:opacity .2s}
+    .item:hover .del{opacity:1}
+    .empty{color:var(--muted);font-size:14px;padding:30px 0;text-align:center}
+    .hint{margin-top:40px;font-size:12.5px;color:var(--muted);line-height:1.9;
+      background:var(--bg-2);border-radius:8px;padding:16px 18px}
+    .hint b{color:var(--accent);font-weight:500}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>사진 관리</h1>
+      <a class="view-link" href="/" target="_blank">완성된 사이트 보기 ↗</a>
+    </header>
+    <p class="desc">사진을 아래 칸에 끌어다 놓으면 자동으로 갤러리에 추가됩니다.</p>
+
+    <label class="drop" id="drop">
+      <div class="drop__icon">＋</div>
+      <div class="drop__big">사진을 여기로 끌어다 놓으세요</div>
+      <div class="drop__small">또는 클릭해서 사진 선택 (여러 장 한꺼번에 가능)</div>
+      <input type="file" id="file" accept="image/*" multiple />
+    </label>
+
+    <div class="status" id="status"></div>
+    <div class="bar" id="bar"><div class="bar__in" id="barIn"></div></div>
+
+    <div class="count" id="count">등록된 작품</div>
+    <div class="grid" id="grid"></div>
+
+    <div class="hint">
+      <b>날짜는 어떻게 정해지나요?</b><br>
+      핸드폰으로 찍은 사진은 <b>찍은 날짜</b>가 자동으로 표시돼요.
+      날짜를 직접 정하고 싶으면 파일 이름 앞에 날짜를 적어 주세요. 예) <b>2026-06-20 글리터.jpg</b><br>
+      <br>
+      <b>인터넷에 올리려면?</b> 사진을 다 정리한 뒤, 폴더(nail-portfolio)를
+      <b>app.netlify.com/drop</b> 에 다시 끌어다 놓으면 링크가 갱신됩니다.
+    </div>
+  </div>
+
+  <script>
+    var drop = document.getElementById('drop');
+    var fileInput = document.getElementById('file');
+    var statusEl = document.getElementById('status');
+    var bar = document.getElementById('bar');
+    var barIn = document.getElementById('barIn');
+    var grid = document.getElementById('grid');
+    var countEl = document.getElementById('count');
+
+    ['dragenter','dragover'].forEach(function(ev){
+      drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('over');});
+    });
+    ['dragleave','drop'].forEach(function(ev){
+      drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('over');});
+    });
+    drop.addEventListener('drop',function(e){ handleFiles(e.dataTransfer.files); });
+    fileInput.addEventListener('change',function(){ handleFiles(fileInput.files); fileInput.value=''; });
+
+    function handleFiles(list){
+      var files = Array.prototype.slice.call(list).filter(function(f){
+        return f.type.indexOf('image/') === 0 || /\.(jpg|jpeg|png|webp|gif|avif|heic|heif)$/i.test(f.name);
+      });
+      if(!files.length){ setStatus('이미지 파일만 올릴 수 있어요.'); return; }
+      uploadAll(files);
+    }
+
+    function uploadAll(files){
+      bar.classList.add('show'); barIn.style.width='0';
+      var done=0;
+      function next(){
+        if(done>=files.length){
+          setStatus('갤러리 정리 중...');
+          fetch('/api/regenerate',{method:'POST'}).then(function(r){return r.json();}).then(function(res){
+            setStatus('완료! 사진 '+files.length+'장이 추가되었어요. (총 '+res.count+'장)');
+            bar.classList.remove('show');
+            loadPhotos();
+          });
+          return;
+        }
+        var f=files[done];
+        setStatus('업로드 중... ('+(done+1)+'/'+files.length+') '+f.name);
+        fetch('/api/upload',{
+          method:'POST',
+          headers:{'X-Filename':encodeURIComponent(f.name),'X-LastModified':String(f.lastModified)},
+          body:f
+        }).then(function(){
+          done++; barIn.style.width=Math.round(done/files.length*100)+'%'; next();
+        }).catch(function(){
+          setStatus('업로드 실패: '+f.name); done++; next();
+        });
+      }
+      next();
+    }
+
+    function loadPhotos(){
+      fetch('/api/photos').then(function(r){return r.json();}).then(function(arr){
+        countEl.textContent='등록된 작품 · '+arr.length+'장';
+        if(!arr.length){ grid.innerHTML='<p class="empty">아직 등록된 사진이 없어요. 위에 끌어다 놓아 시작하세요.</p>'; return; }
+        grid.innerHTML = arr.map(function(p){
+          var nm = p.name ? '<div class="nm">'+escapeHtml(p.name)+'</div>' : '';
+          return '<div class="item">'+
+            '<img loading="lazy" src="/'+encodeURI(p.src)+'" alt="">'+
+            '<button class="del" title="삭제" data-src="'+escapeHtml(p.src)+'">×</button>'+
+            '<div class="meta">'+nm+'<div>'+escapeHtml(p.date||'')+'</div></div>'+
+          '</div>';
+        }).join('');
+        grid.querySelectorAll('.del').forEach(function(b){
+          b.addEventListener('click',function(){ del(b.getAttribute('data-src')); });
+        });
+      });
+    }
+
+    function del(src){
+      if(!confirm('이 사진을 삭제할까요?')) return;
+      setStatus('삭제 중...');
+      fetch('/api/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({src:src})})
+        .then(function(){ return fetch('/api/regenerate',{method:'POST'}); })
+        .then(function(r){return r.json();})
+        .then(function(res){ setStatus('삭제했어요. (총 '+res.count+'장)'); loadPhotos(); });
+    }
+
+    function setStatus(t){ statusEl.textContent=t; }
+    function escapeHtml(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    loadPhotos();
+  </script>
+</body>
+</html>

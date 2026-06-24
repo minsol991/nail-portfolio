@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nail Portfolio</title>
+  <meta name="description" content="네일 아트 포트폴리오" />
+
+  <!-- 폰트 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+KR:wght@400;500;600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- ===== 상단 메뉴 ===== -->
+  <header class="nav" id="nav">
+    <a href="#top" class="nav__logo">Nail Portfolio</a>
+    <nav class="nav__links">
+      <a href="#works">WORKS</a>
+      <a href="#contact">CONTACT</a>
+    </nav>
+    <button class="nav__toggle" id="navToggle" aria-label="메뉴 열기">
+      <span></span><span></span>
+    </button>
+  </header>
+
+  <!-- ===== 히어로 ===== -->
+  <section class="hero" id="top">
+    <div class="hero__inner reveal">
+      <h1 class="hero__name" data-site="heroTitle">Nail Portfolio</h1>
+      <p class="hero__sub" data-site="heroSub"></p>
+      <a href="#works" class="hero__cta">VIEW WORKS <span>↓</span></a>
+    </div>
+  </section>
+
+  <!-- ===== 작품 갤러리 ===== -->
+  <section class="works" id="works">
+    <div class="section-head reveal">
+      <p class="section-head__eyebrow">PORTFOLIO</p>
+      <h2 class="section-head__title">Works</h2>
+    </div>
+
+    <div class="gallery" id="gallery"><!-- 사진 자동 생성 --></div>
+
+    <p class="gallery-empty" id="galleryEmpty" hidden>
+      아직 등록된 작품이 없어요.<br />
+      <span>images 폴더에 사진을 넣고 “사진추가하기”를 눌러 주세요.</span>
+    </p>
+  </section>
+
+  <!-- ===== 연락처 ===== -->
+  <section class="contact" id="contact">
+    <div class="contact__inner reveal">
+      <p class="section-head__eyebrow">CONTACT</p>
+      <h2 class="contact__title">Contact</h2>
+      <div class="contact__links" id="contactLinks"><!-- 자동 생성 --></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> <span data-site="name">Nail Portfolio</span></p>
+  </footer>
+
+  <!-- ===== 사진 확대(라이트박스) ===== -->
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox__close" id="lbClose" aria-label="닫기">×</button>
+    <button class="lightbox__nav lightbox__prev" id="lbPrev" aria-label="이전">‹</button>
+    <figure class="lightbox__figure">
+      <img id="lbImg" src="" alt="" />
+      <figcaption id="lbCaption"></figcaption>
+    </figure>
+    <button class="lightbox__nav lightbox__next" id="lbNext" aria-label="다음">›</button>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/photos.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>
