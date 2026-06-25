@@ -75,8 +75,14 @@
     <button class="lightbox__nav lightbox__next" id="lbNext" aria-label="다음">›</button>
   </div>
 
-  <script src="js/config.js"></script>
-  <script src="js/photos.js"></script>
-  <script src="js/script.js"></script>
+  <!-- 항상 최신 내용을 불러오도록 캐시 무력화 (모바일에서도 자동 갱신) -->
+  <script>
+    (function () {
+      var b = location.protocol === "file:" ? "" : "?t=" + Date.now();
+      document.write('<scr' + 'ipt src="js/config.js' + b + '"><\/scr' + 'ipt>');
+      document.write('<scr' + 'ipt src="js/photos.js' + b + '"><\/scr' + 'ipt>');
+      document.write('<scr' + 'ipt src="js/script.js' + b + '"><\/scr' + 'ipt>');
+    })();
+  </script>
 </body>
 </html>
